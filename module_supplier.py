@@ -10,6 +10,7 @@ class supplier:
         self.__predefined_modules = predefined_modules
 
     def get_module(self, module_name):
+        print('FETCH->',module_name)
         if self.__predefined_modules is not None and module_name in self.__predefined_modules.keys():
             r = Module.Module(self)
             r.parse(self.__predefined_modules[module_name])
@@ -25,7 +26,7 @@ class supplier:
             return r
 
         except:
-            return None
+            raise Exception('Module not found')
 
     def get_module_header(self,module_name):
         if module_name in self.__predefined_modules.keys():

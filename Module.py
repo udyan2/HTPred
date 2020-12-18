@@ -147,34 +147,36 @@ class Module:
         module_name = parts[1][:arg_begin]
 
         arg_list = parts[1][arg_begin + 1:arg_end]
-        mappings = self.get_map_dictionary(arg_list,module_type)
+        (mappings,module_key) = self.get_map_dictionary(arg_list,module_type)
 
         if self.is_module_primitive(module_type):
             temp_gate = None
 
             if module_type == 'DFF':
-                temp_gate = Gates.DFF(module_name)
+                temp_gate = Gates.DFF(module_name,module_key)
             elif module_type == 'OR':
-                temp_gate = Gates.ORGate(module_name)
+                temp_gate = Gates.ORGate(module_name,module_key)
             elif module_type == 'NOT':
-                temp_gate = Gates.NOTGate(module_name)
+                temp_gate = Gates.NOTGate(module_name,module_key)
             elif module_type == 'AND':
-                temp_gate = Gates.ANDGate(module_name)
+                temp_gate = Gates.ANDGate(module_name,module_key)
             elif module_type == 'NAND':
-                temp_gate = Gates.NANDGate(module_name)
+                temp_gate = Gates.NANDGate(module_name,module_key)
             elif module_type == 'NOR':
-                temp_gate = Gates.NORGate(module_name)
+                temp_gate = Gates.NORGate(module_name,module_key)
             elif module_type == 'XOR':
-                temp_gate = Gates.XORGate(module_name)
+                temp_gate = Gates.XORGate(module_name,module_key)
             elif module_type == 'XNOR':
-                temp_gate = Gates.XNORGate(module_name)
+                temp_gate = Gates.XNORGate(module_name,module_key)
+            elif module_type == 'BUFF':
+                temp_gate = Gates.BUFF(module_name, module_key)
 
             self._Internal_Gates[module_name + "_" + str(temp_gate.get_unique_id())] = temp_gate
 
             for k in mappings.keys():
                 if k in temp_gate.get_inputs().keys():
                     if mappings[k] in self._Input_Pins.keys():
-                        self._Input_Pins[mappings[k]] = temp_gate.get_inputs()[k]
+                        self._Input_Pins[mappings[k]].extend(temp_gate.get_inputs()[k])
                     elif mappings[k] in self._Internal_Wires.keys():
                         self._Internal_Wires[mappings[k]].add_out(temp_gate.get_inputs()[k])
 
@@ -208,6 +210,7 @@ class Module:
 
     def get_map_dictionary(self, arg_list,module_name):
         mappings = dict()
+        ordered_args = None
         args = arg_list.split(",")
 
         itr = 0
@@ -215,19 +218,23 @@ class Module:
             arg = arg.strip()
 
             if arg.find('.') == -1:
-                ordered_args = self._supplier.get_args(module_name)
+                if ordered_args is None:
+                    ordered_args = self._supplier.get_args(module_name)
                 mappings[ordered_args[itr]] = arg
 
             else:
+                if ordered_args is None:
+                    ordered_args = []
                 value_part = arg[arg.find('(') + 1:arg.find(')')].strip()
                 key_part = arg[arg.find('.') + 1:arg.find('(')].strip()
                 mappings[key_part] = value_part
+                ordered_args.append(key_part)
             itr += 1
 
-        return mappings
+        return mappings, ordered_args
 
     def is_module_primitive(self, module):
-        return module in ['AND', 'OR', 'NOT', 'XOR', 'NAND', 'NOR', 'XOR', 'XNOR', 'DFF']
+        return module in ['AND', 'OR', 'NOT', 'XOR', 'NAND', 'NOR', 'XOR', 'XNOR', 'DFF', 'BUFF']
 
     def print_module(self):
         print('Module \'' + self._Module_name + '\'', '\n')
@@ -277,8 +284,7 @@ class Module:
         output += '\n'
 
         for i in self.getInternalGates().keys():
-            output += mapping[self.getInternalGates()[i].get_outputs()['Y']] + ' = ' + self.getInternalGates()[
-                i].get_type() + '('
+            output += mapping[self.getInternalGates()[i].get_outputs()[list(self.getInternalGates()[i].get_outputs())[0]]] + ' = ' + self.getInternalGates()[i].get_type() + '('
             pin_keys = list(self.getInternalGates()[i].get_inputs().keys())
             for pins_i in range(len(pin_keys)):
                 output += mapping[self.getInternalGates()[i].get_inputs()[pin_keys[pins_i]][0]]

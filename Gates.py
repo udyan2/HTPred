@@ -26,7 +26,7 @@ class Port:
     def get_parent_gate(self):
         return self.__parent_gate
 
-    def set_parent_gate(self,parent_gate):
+    def set_parent_gate(self, parent_gate):
         self.__parent_gate = parent_gate
 
     def get_unique_id(self):
@@ -51,7 +51,7 @@ class Gate:
     _gateName = None
     _gateType = None
 
-    def __init__(self,gate_name):
+    def __init__(self, gate_name):
         self._gateName = gate_name
         self.__uniqueID = uuid.uuid4()
         pass
@@ -75,10 +75,12 @@ class Gate:
 # The following are different gates :
 
 class ANDGate(Gate):
-    def __init__(self,gate_name):
+    def __init__(self, gate_name, module_arg):
         super().__init__(gate_name)
-        self._inputPins = {'A':[Port(FAN.IN,self)],'B':[Port(FAN.IN,self)]}
-        self._outputPins = {'Y':Port(FAN.OUT,self)}
+        self._inputPins = dict()
+        for i in range(len(module_arg) - 1):
+            self._inputPins[module_arg[i]] = [Port(FAN.IN, self)]
+        self._outputPins = {module_arg[len(module_arg) - 1]: Port(FAN.OUT, self)}
         self._gateType = 'AND'
 
     def operate(self):
@@ -86,10 +88,12 @@ class ANDGate(Gate):
 
 
 class ORGate(Gate):
-    def __init__(self, gate_name):
+    def __init__(self, gate_name, module_arg):
         super().__init__(gate_name)
-        self._inputPins = {'A': [Port(FAN.IN, self)], 'B': [Port(FAN.IN, self)]}
-        self._outputPins = {'Y': Port(FAN.OUT, self)}
+        self._inputPins = dict()
+        for i in range(len(module_arg) - 1):
+            self._inputPins[module_arg[i]] = [Port(FAN.IN, self)]
+        self._outputPins = {module_arg[len(module_arg) - 1]: Port(FAN.OUT, self)}
         self._gateType = 'OR'
 
     def operate(self):
@@ -97,10 +101,12 @@ class ORGate(Gate):
 
 
 class NOTGate(Gate):
-    def __init__(self, gate_name):
+    def __init__(self, gate_name, module_arg):
         super().__init__(gate_name)
-        self._inputPins = {'A': [Port(FAN.IN, self)]}
-        self._outputPins = {'Y': Port(FAN.OUT, self)}
+        self._inputPins = dict()
+        for i in range(len(module_arg) - 1):
+            self._inputPins[module_arg[i]] = [Port(FAN.IN, self)]
+        self._outputPins = {module_arg[len(module_arg) - 1]: Port(FAN.OUT, self)}
         self._gateType = 'NOT'
 
     def operate(self):
@@ -111,10 +117,12 @@ class NOTGate(Gate):
 
 
 class XORGate(Gate):
-    def __init__(self, gate_name):
+    def __init__(self, gate_name, module_arg):
         super().__init__(gate_name)
-        self._inputPins = {'A': [Port(FAN.IN, self)], 'B': [Port(FAN.IN, self)]}
-        self._outputPins = {'Y': Port(FAN.OUT, self)}
+        self._inputPins = dict()
+        for i in range(len(module_arg) - 1):
+            self._inputPins[module_arg[i]] = [Port(FAN.IN, self)]
+        self._outputPins = {module_arg[len(module_arg) - 1]: Port(FAN.OUT, self)}
         self._gateType = 'XOR'
 
     def operate(self):
@@ -122,10 +130,12 @@ class XORGate(Gate):
 
 
 class NANDGate(Gate):
-    def __init__(self, gate_name):
+    def __init__(self, gate_name, module_arg):
         super().__init__(gate_name)
-        self._inputPins = {'A': [Port(FAN.IN, self)], 'B': [Port(FAN.IN, self)]}
-        self._outputPins = {'Y': Port(FAN.OUT, self)}
+        self._inputPins = dict()
+        for i in range(len(module_arg) - 1):
+            self._inputPins[module_arg[i]] = [Port(FAN.IN, self)]
+        self._outputPins = {module_arg[len(module_arg) - 1]: Port(FAN.OUT, self)}
         self._gateType = 'NAND'
 
     def operate(self):
@@ -138,10 +148,12 @@ class NANDGate(Gate):
 
 
 class NORGate(Gate):
-    def __init__(self, gate_name):
+    def __init__(self, gate_name, module_arg):
         super().__init__(gate_name)
-        self._inputPins = {'A': [Port(FAN.IN, self)], 'B': [Port(FAN.IN, self)]}
-        self._outputPins = {'Y': Port(FAN.OUT, self)}
+        self._inputPins = dict()
+        for i in range(len(module_arg) - 1):
+            self._inputPins[module_arg[i]] = [Port(FAN.IN, self)]
+        self._outputPins = {module_arg[len(module_arg) - 1]: Port(FAN.OUT, self)}
         self._gateType = 'NOR'
 
     def operate(self):
@@ -154,10 +166,12 @@ class NORGate(Gate):
 
 
 class XNORGate(Gate):
-    def __init__(self, gate_name):
+    def __init__(self, gate_name, module_arg):
         super().__init__(gate_name)
-        self._inputPins = {'A': [Port(FAN.IN, self)], 'B': [Port(FAN.IN, self)]}
-        self._outputPins = {'Y': Port(FAN.OUT, self)}
+        self._inputPins = dict()
+        for i in range(len(module_arg) - 1):
+            self._inputPins[module_arg[i]] = [Port(FAN.IN, self)]
+        self._outputPins = {module_arg[len(module_arg) - 1]: Port(FAN.OUT, self)}
         self._gateType = 'XNOR'
 
     def operate(self):
@@ -170,11 +184,26 @@ class XNORGate(Gate):
 
 
 class DFF(Gate):
-    def __init__(self, gate_name):
+    def __init__(self, gate_name, module_arg):
         super().__init__(gate_name)
-        self._inputPins = {'CK': [Port(FAN.IN, self)], 'D': [Port(FAN.IN, self)]}
-        self._outputPins = {'Y': Port(FAN.OUT, self)}
+        self._inputPins = dict()
+        for i in range(len(module_arg) - 1):
+            self._inputPins[module_arg[i]] = [Port(FAN.IN, self)]
+        self._outputPins = {module_arg[len(module_arg) - 1]: Port(FAN.OUT, self)}
         self._gateType = 'DFF'
+
+    def operate(self):
+        self._outputPins['Q'].set_value(self._inputPins['D'].get_value())
+
+
+class BUFF(Gate):
+    def __init__(self, gate_name, module_arg):
+        super().__init__(gate_name)
+        self._inputPins = dict()
+        for i in range(len(module_arg) - 1):
+            self._inputPins[module_arg[i]] = [Port(FAN.IN, self)]
+        self._outputPins = {module_arg[len(module_arg) - 1]: Port(FAN.OUT, self)}
+        self._gateType = 'BUFF'
 
     def operate(self):
         self._outputPins['Q'].set_value(self._inputPins['D'].get_value())

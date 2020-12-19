@@ -22,7 +22,8 @@ class bench_session:
 
     def get_map(self):
         for i in self.__module.getWires().keys():
-            self.__map[self.__module.getWires()[i].get_in()] = self.__wire_label + str(self.__wire_marker)
+            for inP in self.__module.getWires()[i].get_in():
+                self.__map[inP] = self.__wire_label + str(self.__wire_marker)
             for outP in self.__module.getWires()[i].get_out():
                 self.__map[outP] = self.__wire_label + str(self.__wire_marker)
             self.__wire_marker += 1
@@ -33,7 +34,8 @@ class bench_session:
             self.__input_marker += 1
 
         for i in self.__module.getOutputs().keys():
-            self.__map[self.__module.getOutputs()[i]] = self.__output_label + str(self.__output_marker)
+            for j in self.__module.getOutputs()[i]:
+                self.__map[j] = self.__output_label + str(self.__output_marker)
             self.__output_marker += 1
 
         return self.__map

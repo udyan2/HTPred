@@ -2,19 +2,21 @@ import HTPredBenchCreator
 import os
 import time
 
-current_milli_time = lambda: int(round(time.time() * 1000))
-
 cell_dir = 'C:/Users/anirb/Downloads/dsci__1/cell/'
-input_file = 'C:/Users/anirb/Downloads/dsci__1/cell/'
+input_file = 'C:/Users/anirb/Downloads/dsci__1/aes_part.txt'
 
-t = os.listdir(input_file)
-m = current_milli_time()
+r = HTPredBenchCreator.Creator(input_file, cell_dir)
+print(r.convert())
 
-for i in range(1000):
-    print(i)
-    for s in t:
-        r = HTPredBenchCreator.Creator(input_file+s,cell_dir)
-        r.convert()
-
-m = current_milli_time() - m
-print('Reqd time : ',m)
+# z = os.listdir(input_file)
+# a = 0
+#
+# currentmillis = int(time.time()*1000)
+# for t in z:
+#     r = HTPredBenchCreator.Creator(input_file+t,cell_dir)
+#     r.convert()
+#     a += 1
+#
+# currentmillis = int(time.time()*1000) - currentmillis
+#
+# print('Compiled',a,'cells in',currentmillis,'millis')

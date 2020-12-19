@@ -121,7 +121,7 @@ class Module:
     def onoutputfound(self, outputpins):
         outputpins = outputpins.split(",")
         for pins in outputpins:
-            self._Output_Pins[pins.strip()] = None
+            self._Output_Pins[pins.strip()] = []
 
     def onwirefound(self, wire_list):
         wire_list = wire_list.split(',')
@@ -179,10 +179,12 @@ class Module:
                         self._Input_Pins[mappings[k]].extend(temp_gate.get_inputs()[k])
                     elif mappings[k] in self._Internal_Wires.keys():
                         self._Internal_Wires[mappings[k]].add_out(temp_gate.get_inputs()[k])
+                    elif mappings[k] in self._Output_Pins.keys():
+                        self._Output_Pins[mappings[k]].extend(temp_gate.get_inputs()[k])
 
                 elif k in temp_gate.get_outputs().keys():
                     if mappings[k] in self._Output_Pins.keys():
-                        self._Output_Pins[mappings[k]] = temp_gate.get_outputs()[k]
+                        self._Output_Pins[mappings[k]].extend(temp_gate.get_outputs()[k])
                     elif mappings[k] in self._Internal_Wires.keys():
                         self._Internal_Wires[mappings[k]].set_in(temp_gate.get_outputs()[k])
 
@@ -201,10 +203,12 @@ class Module:
                         self._Input_Pins[mappings[k]].extend(internal_module.getInputs()[k])
                     elif mappings[k] in self._Internal_Wires.keys():
                         self._Internal_Wires[mappings[k]].add_out(internal_module.getInputs()[k])
+                    elif mappings[k] in self._Output_Pins.keys():
+                        self._Output_Pins[mappings[k]].extend(internal_module.getInputs()[k])
 
                 elif k in internal_module.getOutputs().keys():
                     if mappings[k] in self._Output_Pins.keys():
-                        self._Output_Pins[mappings[k]] = internal_module.getOutputs()[k]
+                        self._Output_Pins[mappings[k]].extend(internal_module.getOutputs()[k])
                     elif mappings[k] in self._Internal_Wires.keys():
                         self._Internal_Wires[mappings[k]].set_in(internal_module.getOutputs()[k])
 
@@ -265,10 +269,11 @@ class Module:
                 print('\'' + j + '\': ' + str(self.getInternalGates()[i].get_inputs()[j][0]), end=' ')
             print('] OUTPUT_PINS [', end='')
             for j in self.getInternalGates()[i].get_outputs().keys():
-                print('\'' + j + '\': ' + str(self.getInternalGates()[i].get_outputs()[j]), end=' ')
+                print('\'' + j + '\': ' + str(self.getInternalGates()[i].get_outputs()[j][0]), end=' ')
             print(']')
 
     def get_bench_file(self):
+        #self.print_module()
         output = str()
         output += '//Module name: ' + self._Module_name + '\n\n'
 
@@ -280,11 +285,11 @@ class Module:
         output += '\n'
 
         for i in self.getOutputs().keys():
-            output += 'OUTPUT(' + mapping[self.getOutputs()[i]] + ')\n'
+            output += 'OUTPUT(' + mapping[self.getOutputs()[i][0]] + ')\n'
         output += '\n'
 
         for i in self.getInternalGates().keys():
-            output += mapping[self.getInternalGates()[i].get_outputs()[list(self.getInternalGates()[i].get_outputs())[0]]] + ' = ' + self.getInternalGates()[i].get_type() + '('
+            output += mapping[self.getInternalGates()[i].get_outputs()[list(self.getInternalGates()[i].get_outputs())[0]][0]] + ' = ' + self.getInternalGates()[i].get_type() + '('
             pin_keys = list(self.getInternalGates()[i].get_inputs().keys())
             for pins_i in range(len(pin_keys)):
                 output += mapping[self.getInternalGates()[i].get_inputs()[pin_keys[pins_i]][0]]

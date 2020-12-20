@@ -114,22 +114,60 @@ class Module:
             self._io_pin_name.append(i.strip())
 
     def oninputfound(self, inputpins):
+        temp_pins,is_array_b = self.is_array(inputpins)
+        if is_array_b:
+            inputpins = temp_pins
         inputpins = inputpins.split(",")
         for pins in inputpins:
             self._Input_Pins[pins.strip()] = []
 
     def onoutputfound(self, outputpins):
+        temp_pins,is_array_b = self.is_array(outputpins)
+        if is_array_b:
+            outputpins = temp_pins
         outputpins = outputpins.split(",")
         for pins in outputpins:
             self._Output_Pins[pins.strip()] = []
 
     def onwirefound(self, wire_list):
+        temp_wires, is_array_b = self.is_array(wire_list)
+        if is_array_b:
+            wire_list = temp_wires
         wire_list = wire_list.split(',')
         for i in wire_list:
             curr_wire = i.strip()
             if curr_wire in self.getInputs().keys() or curr_wire in self.getOutputs().keys():
                 continue
             self._Internal_Wires[curr_wire] = wire()
+
+    def is_array(self,obj_list):
+        obj_list = obj_list.strip()
+        start,end = -1,-1
+        for i in range(len(obj_list)):
+            if obj_list[i] == '[':
+                start = i
+            if obj_list[i] == ']':
+                end = i
+        if start != -1 and end != -1:
+            indices = [int(t) for t in obj_list[start+1:end].split(':')]
+            arg_list = obj_list[end+1:].strip().split(',')
+            args = str()
+            for i in arg_list:
+                for j in range(min(indices[0],indices[1]),max(indices[0],indices[1])+1):
+                    args += (i.strip()+'['+str(j)+'],')
+            return args[0:len(args)-1],True
+
+        return None,False
+
+
+
+
+
+
+
+        return 1,False
+
+
 
     def handle_module_integration(self, line):
         parts = line.split(' ', 1)

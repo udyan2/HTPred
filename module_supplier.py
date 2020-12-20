@@ -10,9 +10,7 @@ class supplier:
         self.__predefined_modules = dict()
 
     def get_module(self, module_name):
-        print('FETCH->', module_name, end='')
         if self.__predefined_modules is not None and module_name in self.__predefined_modules.keys():
-            print(' --PREDEFINED')
             r = Module.Module(self)
             r.parse(self.__predefined_modules[module_name])
             return r
@@ -21,7 +19,6 @@ class supplier:
             input_data = open(self.__folder_path + module_name + '.txt', 'r')
             inputS = input_data.read()
             input_data.close()
-            print(' --DIR')
 
             self.parse(inputS)
             r = Module.Module(self)

@@ -1,7 +1,7 @@
 import Module
 import module_supplier
 
-# HTPredBenchCreator.Creator v1.0
+# HTPredBenchCreator.Creator v1.1
 
 class Creator:
     __dir = None
